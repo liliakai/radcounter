@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import serial
 
@@ -28,8 +29,10 @@ def main():
   port = open_serial()
 
   while True:
-    outfile.write(ser.readline())
+    outfile.write(port.readline())
 
   outfile.close()
   port.close()
 
+if __name__ == "__main__":
+  main()
