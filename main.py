@@ -24,12 +24,18 @@ def open_file():
 
   return open(logdir + '/' + filename(i), 'w')
 
+def read_packet(port)
+  while True:
+    data = ord(port.read(1))
+    if (data & 0x80) != 0:
+      return [data] + map(ord, port.read(2))
+
 def main():
   outfile = open_file()
   port = open_serial()
 
   while True:
-    outfile.write(port.readline())
+    outfile.write(read_packet())
 
   outfile.close()
   port.close()
