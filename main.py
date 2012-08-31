@@ -24,11 +24,20 @@ def open_file():
 
   return open(logdir + '/' + filename(i), 'w')
 
+def parse_packet(packet)
+  length = len(packet)
+  result = 0
+  for i in range(length):
+    byte = packet[length - 1 - i] & 0x7F
+    result += packet[length - 1 - i] << 7*i
+  return result
+
 def read_packet(port)
   while True:
     data = ord(port.read(1))
     if (data & 0x80) != 0:
-      return [data] + map(ord, port.read(2))
+      packet = [data] + map(ord, port.read(2))
+      return parse_packet(packet)
 
 def main():
   outfile = open_file()
