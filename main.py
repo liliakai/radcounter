@@ -28,8 +28,7 @@ def parse_packet(packet)
   length = len(packet)
   result = 0
   for i in range(length):
-    byte = packet[length - 1 - i] & 0x7F
-    result += packet[length - 1 - i] << 7*i
+    result |= (packet[length - 1 - i] & 0x7F) << 7*i
   return result
 
 def read_packet(port)
