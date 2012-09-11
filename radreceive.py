@@ -44,15 +44,18 @@ def main():
   port = open_serial()
 
   lasttime = time.time()
+  count = 0
   while True:
     outfile.write(str(read_packet(port)))
     outfile.write('\n')
+    count += 1
     if time.time() - lasttime  > 60:
       lasttime = time.time()
-      stamp = 'time ' + str(int(time.time()))
-      outfile.write(stamp)
+      outfile.write('time ')
+      outfile.write(str(int(time.time())))
       outfile.write('\n')
-      print stamp
+      print count
+      count = 0
     outfile.flush()
 
   outfile.close()
