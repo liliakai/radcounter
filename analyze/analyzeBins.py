@@ -1,6 +1,5 @@
 import sys
 import math
-import graph
 import Image,ImageDraw
 
 def run(filename):
@@ -10,14 +9,9 @@ def run(filename):
 	bins = {}
 	binCount = 0
 	maxBinValue = 0
-	mbvIndex= 0
 	maxBinNum = 0
-	lastBinOver10 = 0
-	print f.readline().strip()
-	print f.readline().strip()
-	print f.readline().strip()
+	
 	for line in f:
-		
 		binCount = binCount+1
 		data = line.split()
 		bin = int(data[0])
@@ -25,68 +19,60 @@ def run(filename):
 		bins[bin] = value
 		if (value > maxBinValue):
 			maxBinValue = value
-			mbvIndex = bin
-		if (value > 10):
-			lastBinOver10 = bin
 		
 	keys = bins.keys()
 	keys.sort()
-	if len(keys) > 0:
-		maxBinNum = keys[len(keys)-1]
-	else:
-		maxBinNum = -1
-	#print keys
-	#print maxBinValue
+	maxBinNum = keys[len(keys)-1]
+	print keys
+	
+	print maxBinValue
+	im = Image.new('RGB',(4096,maxBinValue+1))
+	draw = ImageDraw.Draw(im)
+	
+	for key in keys:
+		draw.line((key,maxBinValue,key,maxBinValue-bins[key]),fill=(255,255,255))
+	
 	print filename
-	print "Non-empty bins:\t%d" % (binCount)
-	print "Highest bin:\t%d" % (maxBinNum)
-	print "Fullest bin:\t%d (%d counts)" % (mbvIndex,maxBinValue)
+	print "Non-empty bins:\t" 		+ str(binCount)
+	print "Biggest bin value:\t" 	+ str(maxBinValue)
+	print "Biggest bin number:\t" 	+ str(maxBinNum)
 	
-	g = graph.Graph(4196,1000,0,4096,0,maxBinValue)
-	for key in keys:
-		#g.graphBar(key,bins[key])
-		g.graphColorBar(key,bins[key],[float(key)/4096])
-	g.drawLabels("adc reading [0,4096]", "total counts [1,%d]" % maxBinValue)
-	g.save(filename.split("_")[0]+"_linearspectrum.bmp")
+	im.save(filename.split(".")[0]+".bmp","BMP")
+	
+	#width = maxBinNum
+	width = 1000
+	height = 1000
+	im = Image.new('RGB',(width,height))
+	draw = ImageDraw.Draw(im)
 
+	xunit = width / maxBinNum;
+	yborder = height / 10
+	xborder = height / 20
 	
-	if maxBinValue > 0:
-		g = graph.Graph(4196,1000,0,4096,0,math.log(maxBinValue))
-	else:
-		g = graph.Graph(4196,1000,0,4096,0,1)
+	maxlogval = math.log(maxBinValue)
+	
+	h = height-yborder
+	w = width-2*xborder
+	xmax = width-xborder
+	for key in keys:
+		x = xborder + w * float(key) / maxBinNum
+		y = h * math.log(bins[key]) / maxlogval
 		
-	gridline = 1
-	while( gridline <= 10 and gridline < maxBinValue):
-		g.gridline(math.log(gridline),str(gridline))
-		tmp = gridline
-		while( gridline < maxBinValue ):
-			g.gridline(math.log(gridline),str(gridline))
-			gridline *= 10
-			
-		gridline = tmp+1
+		print key, x, y
+		
+		draw.rectangle((x,h-y,x+xunit,h),fill=(255,255,255))
 	
-	for key in keys:
-		value = bins[key]
-		#g.graphBar(key,math.log(value))
-		if key > 2044:
-			tmp = math.log(max(1,0.25*value))
-			for i in range(4):
-				#g.graphBar(key+i,tmp)
-				g.graphColorBar(key+i,tmp,[float(key+i)/4096])
-		elif key > 1022:
-			tmp = math.log(max(1,0.5*value))
-			for i in range(2):
-				#g.graphBar(key+i,tmp)
-				g.graphColorBar(key+i,tmp,[float(key+i)/4096])
-		else:
-			#g.graphBar(key,math.log(value))
-			g.graphColorBar(key,math.log(value),[float(key)/4096])
-			
-	g.drawLabels("adc reading [0,4096]", "total counts [1,%d]" % maxBinValue)
-	g.save(filename.split("_")[0]+"_logspectrum.bmp")
+	#draw.line((xborder,0,xmax,0),fill=(255,0,0))
+	draw.line((xborder,h,xmax,h),fill=(255,0,0))
+	draw.line((xborder,0,xborder,h),fill=(255,0,0))
+	draw.line((xmax+xunit,0,xmax+xunit,h),fill=(255,0,0))
+	
+	
+	draw.text((xborder,h+yborder/5),"x: 0 -> %d" % maxBinNum)
+	draw.text((xborder,h+yborder/5*2),"y: 1 -> %d (log scale)" % maxBinValue)
+	im.save(filename.split(".")[0]+"_log.bmp","BMP")
 
-	
-	
+
 
 if __name__ == "__main__":
 	filename = "./bindata.txt"

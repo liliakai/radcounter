@@ -6,25 +6,36 @@ def run(filename):
 	f = open(filename)
 	counts = 0;
 	minutes = 0;
+	largest = 0;
 	
 	bins = {}
-	
+
+	print("scanning for largest ADC value")	
 	while True:
-		bytes = f.read(2)
-		if (len(bytes) < 2):
+		line = f.readline()
+		if (len(line) < 2):
 			break
-		
-		data = (ord(bytes[0]) << 8) + ord(bytes[1])
-		
-		if (data == 0xffff):
+		if not line.startswith("time"):
+			data = int(line)
+			if largest < data:
+				largest = data
+
+	print("binning events")	
+	f.seek(0)
+	while True:
+		line = f.readline()
+		if (len(line) < 2):
+			break
+		if line.startswith("time"):
 			minutes = minutes + 1
 			print str(minutes) + " min"
+			continue
+		data = int(line)
+		binNum = 4096 * data / largest
+		if bins.has_key(binNum):
+			bins[binNum] = bins[binNum] + 1
 		else:
-			binNum = 4096 * data / 0xffff
-			if bins.has_key(binNum):
-				bins[binNum] = bins[binNum] + 1
-			else:
-				bins[binNum] = 1	
+			bins[binNum] = 1	
 			
 			counts = counts+1
 			print str(data)
