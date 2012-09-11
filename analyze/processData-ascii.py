@@ -7,6 +7,7 @@ def run(filename):
 	counts = 0;
 	minutes = 0;
 	largest = 0;
+	smallest = 0xFFFFFF
 	
 	bins = {}
 
@@ -19,6 +20,9 @@ def run(filename):
 			data = int(line)
 			if largest < data:
 				largest = data
+			if smallest > data:
+				smallest = data
+		datarange = largest - smallest
 
 	print("binning events")	
 	f.seek(0)
@@ -31,14 +35,14 @@ def run(filename):
 			print str(minutes) + " min"
 			continue
 		data = int(line)
-		binNum = 4096 * data / largest
+		binNum = int(4096 * (data - smallest) / float(datarange))
 		if bins.has_key(binNum):
 			bins[binNum] = bins[binNum] + 1
 		else:
 			bins[binNum] = 1	
 			
 			counts = counts+1
-			print str(data)
+			#print str(data)
 			
 	
 	outputFilename = filename.split(".")[0] + "_bins.txt";
