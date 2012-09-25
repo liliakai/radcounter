@@ -53,10 +53,10 @@ def run(filename):
 		if bins.has_key(binNum):
 			bins[binNum] = bins[binNum] + 1
 		else:
-			bins[binNum] = 1	
+			bins[binNum] = 1
 			
-			counts = counts+1
-			#print str(data)
+		counts = counts+1
+		#print str(data)
 			
 	
 	outputFilename = filename.split(".")[0] + "_bins.txt";
@@ -82,7 +82,7 @@ def run(filename):
 	g.save(filename.split(".")[0]+"_timeline.bmp")
 	
 	if (minutes > 0):
-		print "avg cpm: %f" % (counts/minutes)
+		print "avg cpm: %f" % (float(counts)/minutes)
 		print "max cpm: %d" % (maxcpm)
 		
 	return outputFilename
