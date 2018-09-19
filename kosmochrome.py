@@ -6,8 +6,11 @@ import serial
 def filename(i):
   return str(i) + '.rad'
 
-def open_serial():
-  return serial.Serial('/dev/ttyUSB0', 115200)
+def open_chrome():
+  return serial.Serial('/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0', 57600)
+
+def open_kosmo():
+  return serial.Serial('/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A5005Y58-if00-port0', 115200)
 
 def open_file():
   logdir = 'data'
@@ -40,26 +43,37 @@ def read_packet(port):
       return parse_packet(packet)
 
 def main():
-  outfile = open_file()
-  port = open_serial()
+  #outfile = open_file()
+  port = open_kosmo() # the detector
+  chrome = open_chrome() # the LED panel
 
   lasttime = time.time()
   count = 0
+  chrome.write("127")
+  time.sleep(1)
   while True:
-    outfile.write(str(read_packet(port)))
-    outfile.write('\n')
-    count += 1
+    data=read_packet(port)
+    if data > 600000:
+      print data
+      smallData = (data>>12) & 0x1FF
+      print str(smallData)
+      chrome.write(str(smallData))
+      time.sleep(0.05)
+  #  outfile.write(str(read_packet(port)))
+  #  outfile.write('\n')
+      count += 1
     if time.time() - lasttime  > 60:
       lasttime = time.time()
-      outfile.write('time ')
-      outfile.write(str(int(time.time())))
-      outfile.write('\n')
+  #    outfile.write('time ')
+  #    outfile.write(str(int(time.time())))
+  #    outfile.write('\n')
       print count
       count = 0
-    outfile.flush()
+    #outfile.flush()
 
-  outfile.close()
+  #outfile.close()
   port.close()
+  chrome.close()
 
 if __name__ == "__main__":
   main()
