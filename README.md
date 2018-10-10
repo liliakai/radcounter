@@ -1,8 +1,3 @@
-Install PIL
-===========
-
-pip install Pillow
-
 Radcounter
 ==========
 Yet another iteration of our home-made radiation spectrometer.
@@ -33,3 +28,10 @@ Each byte of output from the ADC board's serial port will reserve one
 bit (the MSb) for control. This bit is on for the first byte (MSB) of
 a sample, and off otherwise. The other 7 bits are data, and we always
 expect 3 bytes per sample.
+
+Usage
+===========
+
+pip install Pillow
+python analyze/processData-ascii.py 13.rad
+python analyze/analyzeBins-graph.py 13_bins.txt
