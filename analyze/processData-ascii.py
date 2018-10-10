@@ -1,7 +1,7 @@
 import sys
 import time
 import graph
-import Image,ImageDraw
+from PIL import Image,ImageDraw
 
 def scaled_value(data, smallest, largest):
   (data - smallest) / float(largest)
@@ -60,7 +60,7 @@ def run(filename):
     else:
       bins[binNum] = 1
     counts = counts+1
-  
+
   outputFilename = filename.split(".")[0] + "_bins.txt";
   fbin = open(outputFilename,'w')
   print("Duration: %d minutes\n" % minutes);
@@ -68,13 +68,13 @@ def run(filename):
     print("Counts: %d (%f CPM)\n" % (counts, counts/minutes));
   else:
     print("Counts: %d (%f CPM)\n" % (counts, counts));
-  
+
   keys = bins.keys()
   keys.sort()
   for key in keys:
     fbin.write(str(key) + " " + str(bins[key]) + "\n")
   fbin.close()
-  
+
   g = graph.Graph(1000,1000,0,minutes,0,maxcpm)
   for t in range(minutes):
     #g.graphBar(t,cpm[t])

@@ -1,12 +1,12 @@
 import sys
 import math
 import graph
-import Image,ImageDraw
+from PIL import Image,ImageDraw
 
 def run(filename):
 
 	f = open(filename)
-	
+
 	bins = {}
 	binCount = 0
 	maxBinValue = 0
@@ -17,7 +17,7 @@ def run(filename):
 	print f.readline().strip()
 	print f.readline().strip()
 	for line in f:
-		
+
 		binCount = binCount+1
 		data = line.split()
 		bin = int(data[0])
@@ -28,7 +28,7 @@ def run(filename):
 			mbvIndex = bin
 		if (value > 10):
 			lastBinOver10 = bin
-		
+
 	keys = bins.keys()
 	keys.sort()
 	if len(keys) > 0:
@@ -41,7 +41,7 @@ def run(filename):
 	print "Non-empty bins:\t%d" % (binCount)
 	print "Highest bin:\t%d" % (maxBinNum)
 	print "Fullest bin:\t%d (%d counts)" % (mbvIndex,maxBinValue)
-	
+
 	g = graph.Graph(4196,1000,0,4096,0,maxBinValue)
 	for key in keys:
 		#g.graphBar(key,bins[key])
@@ -49,12 +49,12 @@ def run(filename):
 	g.drawLabels("adc reading [0,4096]", "total counts [1,%d]" % maxBinValue)
 	g.save(filename.split("_")[0]+"_linearspectrum.bmp")
 
-	
+
 	if maxBinValue > 0:
 		g = graph.Graph(4196,1000,0,4096,0,math.log(maxBinValue))
 	else:
 		g = graph.Graph(4196,1000,0,4096,0,1)
-		
+
 	gridline = 1
 	while( gridline <= 10 and gridline < maxBinValue):
 		g.gridline(math.log(gridline),str(gridline))
@@ -62,9 +62,9 @@ def run(filename):
 		while( gridline < maxBinValue ):
 			g.gridline(math.log(gridline),str(gridline))
 			gridline *= 10
-			
+
 		gridline = tmp+1
-	
+
 	for key in keys:
 		value = bins[key]
 		#g.graphBar(key,math.log(value))
@@ -81,12 +81,12 @@ def run(filename):
 		else:
 			#g.graphBar(key,math.log(value))
 			g.graphColorBar(key,math.log(value),[float(key)/4096])
-			
+
 	g.drawLabels("adc reading [0,4096]", "total counts [1,%d]" % maxBinValue)
 	g.save(filename.split("_")[0]+"_logspectrum.bmp")
 
-	
-	
+
+
 
 if __name__ == "__main__":
 	filename = "./bindata.txt"
