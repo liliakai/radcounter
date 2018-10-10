@@ -1,3 +1,8 @@
+Install PIL
+===========
+
+pip install Pillow
+
 Radcounter
 ==========
 Yet another iteration of our home-made radiation spectrometer.
